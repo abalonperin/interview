@@ -1,7 +1,7 @@
 package forex.interfaces.api.rates
 
 import forex.domain._
-import forex.processes.rates.messages._
+import forex.processes.rates.GetRequest
 
 object Converters {
   import Protocol._

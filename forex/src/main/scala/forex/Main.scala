@@ -5,6 +5,7 @@ import com.typesafe.scalalogging._
 import forex.config._
 import forex.main._
 import org.zalando.grafter._
+import eu.timepit.refined.pureconfig._
 
 object Main extends App with LazyLogging {
 

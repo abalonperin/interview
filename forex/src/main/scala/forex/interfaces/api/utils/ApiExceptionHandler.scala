@@ -7,12 +7,17 @@ object ApiExceptionHandler {
 
   def apply(): server.ExceptionHandler =
     server.ExceptionHandler {
-      case _: RatesError ⇒
+      case f: RatesError.ForgeError ⇒
         ctx ⇒
-          ctx.complete("Something went wrong in the rates process")
-      case _: Throwable ⇒
+          ctx.complete(
+            s""""Something went wrong in the forge service: {"statusCode":${f.statusCode}, "reason":"${f.reason}", "throwable":"${f.throwable}"}"""
+          )
+      case c: RatesError.CacheError ⇒
         ctx ⇒
-          ctx.complete("Something else went wrong")
+          ctx.complete(s"""Something went wrong in the cache service: {"throwable":"${c.toString}""")
+      case t: Throwable ⇒
+        ctx ⇒
+          ctx.complete(s"Something else went wrong: $t")
     }
 
 }

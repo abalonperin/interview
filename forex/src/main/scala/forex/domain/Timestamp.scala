@@ -1,10 +1,10 @@
 package forex.domain
 
-import io.circe._
-import io.circe.generic.extras.wrapped._
-import io.circe.java8.time._
-
 import java.time.OffsetDateTime
+
+import io.circe._
+import io.circe.java8.time._
+import io.circe.generic.extras.wrapped._
 
 case class Timestamp(value: OffsetDateTime) extends AnyVal
 
@@ -14,4 +14,6 @@ object Timestamp {
 
   implicit val encoder: Encoder[Timestamp] =
     deriveUnwrappedEncoder[Timestamp]
+
+  implicit val decoder: Decoder[Timestamp] = deriveUnwrappedDecoder[Timestamp]
 }

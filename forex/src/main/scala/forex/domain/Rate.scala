@@ -1,5 +1,6 @@
 package forex.domain
 
+import forex.domain.forge.Conversion
 import io.circe._
 import io.circe.generic.semiauto._
 
@@ -18,8 +19,13 @@ object Rate {
   object Pair {
     implicit val encoder: Encoder[Pair] =
       deriveEncoder[Pair]
+
+    implicit val decoder: Decoder[Pair] =
+      deriveDecoder[Pair]
   }
 
   implicit val encoder: Encoder[Rate] =
     deriveEncoder[Rate]
+
+  implicit val decoder: Decoder[Rate] = deriveDecoder[Rate]
 }
