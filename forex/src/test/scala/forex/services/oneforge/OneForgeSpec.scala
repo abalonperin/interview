@@ -10,16 +10,16 @@ import cats.data.EitherT
 import cats.implicits._
 import com.softwaremill.sttp.asynchttpclient.monix.AsyncHttpClientMonixBackend
 import com.softwaremill.sttp.testing.SttpBackendStub
-import com.softwaremill.sttp.{Method, SttpBackendOptions}
+import com.softwaremill.sttp.{ Method, SttpBackendOptions }
 import eu.timepit.refined.auto._
 import forex.config.ForgeConfig
-import forex.domain.{Currency, Price, Rate, Timestamp}
+import forex.domain.{ Currency, Price, Rate, Timestamp }
 import forex.services.ServiceError.ForgeError
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
 import org.atnos.eff.syntax.addon.monix.task._
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatest.{ AsyncFlatSpec, Matchers }
 import io.circe.syntax._
 
 class OneForgeSpec extends AsyncFlatSpec with Matchers {
@@ -29,8 +29,7 @@ class OneForgeSpec extends AsyncFlatSpec with Matchers {
       ForgeConfig("api key", "http://test.com", None, None)
 
     implicit val testingBackend =
-      SttpBackendStub[Task, Observable[ByteBuffer], Observable[ByteBuffer]](
-        AsyncHttpClientMonixBackend())
+      SttpBackendStub[Task, Observable[ByteBuffer], Observable[ByteBuffer]](AsyncHttpClientMonixBackend())
         .whenRequestMatches(
           p ⇒
             p.uri.paramsSeq.equals(
@@ -42,8 +41,7 @@ class OneForgeSpec extends AsyncFlatSpec with Matchers {
               )
             ) && p.method == Method.GET
         )
-        .thenRespond(
-          """{"value":0.842162,"text":"1 USD is worth 0.842162 EUR","timestamp":1513840116}""")
+        .thenRespond("""{"value":0.842162,"text":"1 USD is worth 0.842162 EUR","timestamp":1513840116}""")
 
     val result = for {
       r ← EitherT(
@@ -62,7 +60,7 @@ class OneForgeSpec extends AsyncFlatSpec with Matchers {
             fb.price.value shouldBe BigDecimal(0.842162)
             fb.timestamp.value.toEpochSecond shouldBe 1513840116
           }
-        ) gi
+        )
       )
 
   }
@@ -74,8 +72,7 @@ class OneForgeSpec extends AsyncFlatSpec with Matchers {
       "API Key Not Valid. Please go to 1forge.com to get an API key. If you have any questions please email us at contact@1forge.com"
 
     implicit val testingBackend =
-      SttpBackendStub[Task, Observable[ByteBuffer], Observable[ByteBuffer]](
-        AsyncHttpClientMonixBackend())
+      SttpBackendStub[Task, Observable[ByteBuffer], Observable[ByteBuffer]](AsyncHttpClientMonixBackend())
         .whenRequestMatches(
           p ⇒
             p.uri.paramsSeq.equals(
@@ -117,8 +114,7 @@ class OneForgeSpec extends AsyncFlatSpec with Matchers {
 
     implicit val testingBackend =
       SttpBackendStub[Task, Observable[ByteBuffer], Observable[ByteBuffer]](
-        AsyncHttpClientMonixBackend(
-          SttpBackendOptions.connectionTimeout(config.connectionTimeOut.get))
+        AsyncHttpClientMonixBackend(SttpBackendOptions.connectionTimeout(config.connectionTimeOut.get))
       ).whenRequestMatches(
           p ⇒
             p.uri.paramsSeq.equals(
@@ -150,8 +146,7 @@ class OneForgeSpec extends AsyncFlatSpec with Matchers {
     val config = ForgeConfig("api key", "http://test.com", 1.seconds.some, None)
 
     implicit val testingBackend =
-      SttpBackendStub[Task, Observable[ByteBuffer], Observable[ByteBuffer]](
-        AsyncHttpClientMonixBackend())
+      SttpBackendStub[Task, Observable[ByteBuffer], Observable[ByteBuffer]](AsyncHttpClientMonixBackend())
         .whenRequestMatches(
           p ⇒
             p.uri.paramsSeq.equals(
