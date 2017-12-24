@@ -1,7 +1,10 @@
 package forex.interfaces.api.utils
 
 import akka.http.scaladsl._
+import akka.http.scaladsl.model._
 import forex.processes._
+
+case class ErrorRespone(reason: String, throwable: Throwable)
 
 object ApiExceptionHandler {
 
@@ -10,14 +13,40 @@ object ApiExceptionHandler {
       case f: RatesError.ForgeError ⇒
         ctx ⇒
           ctx.complete(
-            s""""Something went wrong in the forge service: {"statusCode":${f.statusCode}, "reason":"${f.reason}", "throwable":"${f.throwable}"}"""
+            HttpResponse(
+              StatusCodes.InternalServerError,
+              entity = HttpEntity(
+                s"""{"reason":"forger service error: ${f.reason}", "throwable":"${f.throwable}"}"""
+              )
+            )
           )
       case c: RatesError.CacheError ⇒
         ctx ⇒
-          ctx.complete(s"""Something went wrong in the cache service: {"throwable":"${c.toString}""")
+          ctx.complete(
+            HttpResponse(
+              StatusCodes.InternalServerError,
+              entity = HttpEntity(
+                s"""{"reason":"cache error", "throwable":"${c.throwable}"}""")
+            )
+          )
+      case u: RatesError.UnexpectedError ⇒
+        ctx ⇒
+          ctx.complete(
+            HttpResponse(
+              StatusCodes.InternalServerError,
+              entity = HttpEntity(
+                s"""{"reason":"unexpected error", "throwable":"${u}"}""")
+            )
+          )
       case t: Throwable ⇒
         ctx ⇒
-          ctx.complete(s"Something else went wrong: $t")
+          ctx.complete(
+            HttpResponse(
+              StatusCodes.InternalServerError,
+              entity = HttpEntity(
+                s"""{"reason":"unexpected error", "throwable":"${t}"}""")
+            )
+          )
     }
 
 }
