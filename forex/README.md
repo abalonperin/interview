@@ -1,42 +1,108 @@
-# Paidy Take-Home Coding Exercises
+# Technical stack:
+* HTTP clint: [sttp](https://github.com/softwaremill/sttp)
+* Simple refinement types for Scala: [refined
+](https://github.com/fthomas/refined)
+* Cahce: [scaffeine
+](https://github.com/blemale/scaffeine) 
 
-## What to expect?
-We expect that the amount of effort to do any of these exercises is in the range of about 4-6 hours of actual work. We also understand that your time is valuable, and in anyone's busy schedule that constitutes a fairly substantial chunk of time, so we really appreciate any effort you put in to helping us build a solid team.
+# How do I design this service?
+According to requirements:
+> An internal user of the application should be able to ask for an exchange rate between 2 given currencies, and get back a rate that is not older than 5 minutes. The application should at least support 10.000 requests per day.
+?
 
-## What we are looking for?
-**Keep it simple**. Really. 4-6 hours isn't a lot of time and we really don't want you spending too much more time on it than that.
+I need to obsolete a rate which is older than 5 minutes and contend with heavy traffic.
+A simple solution is that I access 1-forge service once when a user triggers a request and get rid of out-of-date rate.
+There are several disadvantages: 
+1. when traffic becomes heavy, there is a high possibility that I  might break 1-forge service and forex service.
+2. when traffic becomes heavy, It might cause the tremendous cost of 1-forge service because 1-forge service API isn't free.
+3. when an internet connection is poor,  forex service might always return internal server error or the response time might become longer.
 
-**Treat it like production code**. That is, develop your software in the same way that you would for any code that is intended to be deployed to production. These may be toy exercises, but we really would like to get an idea of how you build code on a day-to-day basis.
+In order to not to access 1-forge service every time, I assume a currency rate should not have a dramatic change in 5 minutes. 
+So I put a rate that gets from 1-forge service into a cache and this rate will expire after 5 minutes. 
+According to this design, I don't frequently reach 1-forge service. 
+It improves the response time and reduces the expense of 1-forge service and forex service have a capacity of serving more online users.
 
-## How to submit?
-You can do this however you see fit - you can email us a tarball, a pointer to download your code from somewhere or just a link to a source control repository. Make sure your submission includes a small **README**, documenting any assumptions, simplifications and/or choices you made, as well as a short description of how to run the code and/or tests.
+## Architecture
+![](https://www.dropbox.com/s/75uaavfthwyg1ni/Forex.jpg?dl=0)   
+                    
+# How to run all test cases?
+```scala
+sbt test
+```
 
-## The Interview:
-After you submit your code, we will contact you to discuss and potentially arrange an in-person interview with some of the team.
-The interview will cover a wide range of technical and social aspects relevant to working at Paidy, but importantly for this exercise: we will also take the opportunity to step through your submitted code with you.
+# How to access this service?
+1. start service
+```scala
+sbt run
+```
 
-## The Exercises:
-### 1. [Platform] Build an API for managing users
-The complete specification for this exercise can be found in the [UsersAPI.md](UsersAPI.md).
+2. access service
+```bash
+curl 'http://localhost:8888?from=USD&to=JPY'
+* Rebuilt URL to: http://localhost:8888/?from=USD&to=JPY
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8888 (#0)
+> GET /?from=USD&to=JPY HTTP/1.1
+> Host: localhost:8888
+> User-Agent: curl/7.54.0
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< Server: akka-http/10.0.10
+< Date: Fri, 22 Dec 2017 09:56:54 GMT
+< Content-Type: application/json
+< Content-Length: 77
+<
+* Connection #0 to host localhost left intact
+{"from":"USD","to":"JPY","price":113.3465,"timestamp":"2017-12-22T09:56:48Z"}
 
-### 2. [Frontend] Build a SPA that displays weather information
-The complete specification for this exercise can be found in the [Weather.md](Weather.md).
+curl 'http://localhost:8888?from=USD&to=XXX'
+* Rebuilt URL to: http://localhost:8888/?from=USD&to=XXX
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8888 (#0)
+> GET /?from=USD&to=XXX HTTP/1.1
+> Host: localhost:8888
+> User-Agent: curl/7.54.0
+> Accept: */*
+>
+< HTTP/1.1 400 Bad Request
+< Server: akka-http/10.0.10
+< Date: Fri, 22 Dec 2017 16:15:43 GMT
+< Content-Type: text/plain; charset=UTF-8
+< Content-Length: 71
+<
+The query parameter 'to' was malformed:
+* Connection #0 to host localhost left intact
+XXX (of class java.lang.String)
 
-### 3. [Platform] Build a local proxy for currency exchange rates
-The complete specification for this exercise can be found in the [Forex.md](Forex.md).
+curl -v 'http://localhost:8888?from=SGD&to=CAD'
+* Rebuilt URL to: http://localhost:8888/?from=SGD&to=CAD
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8888 (#0)
+> GET /?from=SGD&to=CAD HTTP/1.1
+> Host: localhost:8888
+> User-Agent: curl/7.54.0
+> Accept: */*
+>
+< HTTP/1.1 500 Internal Server Error
+< Server: akka-http/10.0.10
+< Date: Fri, 22 Dec 2017 16:38:50 GMT
+< Content-Type: text/plain; charset=UTF-8
+< Content-Length: 166
+<
+* Connection #0 to host localhost left intact
+{"reason":"forger service error: We are unable to convert the price for the given currencies.  If you need help, please email contact@1forge.com", "throwable":"None"}
+```
 
-### 4. [Mobile] Create a Grouped Card View
-The complete specification for this exercise can be found in the [GroupedCardView.md](GroupedCardView.md).
+# Improvement
+1. The body of error response:
+Should transform body of error response into json format.
 
-## F.A.Q.
-1) _Is it OK to share your solutions publicly?_
-Yes, the questions are not prescriptive, the process and discussion around the code is the valuable part. You do the work, you own the code. Given we are asking you to give up your time, it is entirely reasonable for you to keep and use your solution as you see fit.
+2. The `Content-Type` of error response:
+Should transform `Content-Type` of error response into `application/json`.
 
-2) _Should I do X?_
-For any value of X, it is up to you, we intentionally leave the problem a little open-ended and will leave it up to you to provide us with what you see as important. Just remember the rough time frame of the project. If it is going to take you a couple of days, it isn't essential.
-
-3) _Something is ambiguous, and I don't know what to do?_
-The first thing is: don't get stuck. We really don't want to trip you up intentionally, we are just attempting to see how you approach problems. That said, there are intentional ambiguities in the specifications, mainly to see how you fill in those gaps, and how you make design choices.
-If you really feel stuck, our first preference is for you to make a decision and document it with your submission - in this case there is really no wrong answer. If you feel it is not possible to do this, just send us an email and we will try to clarify or correct the question for you.
-
-Good luck!
+3. A monitor mechanism
+Should send events to a monitor system in order to track this service. 
