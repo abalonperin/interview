@@ -24,6 +24,7 @@ object Interpreters {
 }
 
 object Cache {
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   val mapCache: mutable.Map[String, String] = scala.collection.mutable.Map.empty
 
   def caffeineCache(cacheConfig: CacheConfig): scaffeine.Cache[String, String] =

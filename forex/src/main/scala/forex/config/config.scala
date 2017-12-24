@@ -8,7 +8,7 @@ import eu.timepit.refined.string.Url
 import org.zalando.grafter.macros._
 
 @readers
-case class ApplicationConfig(
+final case class ApplicationConfig(
     akka: AkkaConfig,
     api: ApiConfig,
     executors: ExecutorsConfig,
@@ -16,23 +16,23 @@ case class ApplicationConfig(
     cache: CacheConfig
 )
 
-case class AkkaConfig(
+final case class AkkaConfig(
     name: String,
     exitJvmTimeout: Option[FiniteDuration]
 )
 
-case class ApiConfig(
+final case class ApiConfig(
     interface: String,
     port: Int
 )
 
-case class ExecutorsConfig(
+final case class ExecutorsConfig(
     default: String
 )
 
-case class CacheConfig(maximumSize: Int Refined Positive, timeToLive: FiniteDuration)
+final case class CacheConfig(maximumSize: Int Refined Positive, timeToLive: FiniteDuration)
 
-case class ForgeConfig(key: String,
-                       url: String Refined Url,
-                       readTimeOut: Option[FiniteDuration],
-                       connectionTimeOut: Option[FiniteDuration])
+final case class ForgeConfig(key: String,
+                             url: String Refined Url,
+                             readTimeOut: Option[FiniteDuration],
+                             connectionTimeOut: Option[FiniteDuration])

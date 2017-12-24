@@ -5,16 +5,16 @@ import shapeless.{ ::, Generic, HNil, Lazy }
 
 abstract class UnwrappedDecoder[A] extends Decoder[A]
 
-final object UnwrappedDecoder {
+@SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+object UnwrappedDecoder {
   implicit def decodeUnwrapped[A <: AnyVal, R](
       implicit
       gen: Lazy[Generic.Aux[A, R :: HNil]],
       decode: Decoder[R]
-  ): UnwrappedDecoder[A] = new UnwrappedDecoder[A] {
-    override def apply(c: HCursor): Decoder.Result[A] =
+  ): UnwrappedDecoder[A] =
+    (c: HCursor) ⇒
       decode(c) match {
         case Right(unwrapped) ⇒ Right(gen.value.from(unwrapped :: HNil))
         case l @ Left(_)      ⇒ l.asInstanceOf[Decoder.Result[A]]
-      }
-  }
+    }
 }

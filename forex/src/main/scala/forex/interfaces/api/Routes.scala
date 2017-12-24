@@ -6,7 +6,7 @@ import org.zalando.grafter.macros._
 import utils._
 
 @readerOf[ApplicationConfig]
-case class Routes(
+final case class Routes(
     ratesRoutes: rates.Routes
 ) {
   import server.Directives._

@@ -9,7 +9,7 @@ import forex.config._
 import forex.interfaces.api.Routes
 
 @readerOf[ApplicationConfig]
-case class Api(
+final case class Api(
     config: ApiConfig,
     actorSystems: ActorSystems,
     executors: Executors,

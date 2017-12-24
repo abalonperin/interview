@@ -6,7 +6,7 @@ import org.atnos.eff.syntax.addon.monix.task._
 import org.zalando.grafter.macros._
 
 @readerOf[ApplicationConfig]
-case class Runners() {
+final case class Runners() {
 
   def runApp[R](
       app: AppEffect[R]

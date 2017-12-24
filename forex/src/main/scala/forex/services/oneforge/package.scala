@@ -24,12 +24,12 @@ package object oneforge {
                 )
               )
             case (Left(_), Right(e)) ⇒
-              Left(ForgeError(response.code, e.message))
+              Left(ForgeError(response.code, e.message, None))
             case (Left(l), Left(_)) ⇒
               Left(ForgeError(response.code, s"Unexpected error: $r", l.fillInStackTrace().some))
           }
         case Left(l) ⇒
-          Left(ForgeError(response.code, s"Unexpected error: $l"))
+          Left(ForgeError(response.code, s"Unexpected error: $l", None))
       }
   }
 }

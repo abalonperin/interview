@@ -8,7 +8,7 @@ import org.zalando.grafter._
 import org.zalando.grafter.macros._
 
 @readerOf[ApplicationConfig]
-case class ActorSystems(
+final case class ActorSystems(
     config: AkkaConfig
 ) extends Start
     with Stop {

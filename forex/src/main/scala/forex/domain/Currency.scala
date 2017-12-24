@@ -4,6 +4,7 @@ import cats.Show
 import io.circe._
 
 sealed trait Currency
+
 object Currency {
   final case object AUD extends Currency
   final case object CAD extends Currency
@@ -15,6 +16,7 @@ object Currency {
   final case object SGD extends Currency
   final case object USD extends Currency
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   implicit val show: Show[Currency] = Show.show {
     case AUD ⇒ "AUD"
     case CAD ⇒ "CAD"
@@ -39,9 +41,11 @@ object Currency {
     case "USD" | "usd" ⇒ USD
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   implicit val encoder: Encoder[Currency] =
     Encoder.instance[Currency] { show.show _ andThen Json.fromString }
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   implicit val decoder: Decoder[Currency] =
     Decoder.instance[Currency] { c ⇒
       c.as[String].fold(fa ⇒ Left(fa), fb ⇒ Right(fromString(fb)))

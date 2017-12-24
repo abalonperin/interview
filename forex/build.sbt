@@ -51,3 +51,11 @@ dependencyOverrides ++= Seq(
 )
 
 parallelExecution in Test := false
+
+wartremoverWarnings in (Compile, compile) ++= Warts.allBut(
+  Wart.ImplicitParameter,
+  Wart.ExplicitImplicitTypes,
+  Wart.Nothing,
+  Wart.PublicInference,
+  Wart.Overloading
+)

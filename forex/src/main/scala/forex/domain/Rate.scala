@@ -1,10 +1,9 @@
 package forex.domain
 
-import forex.domain.forge.Conversion
 import io.circe._
 import io.circe.generic.semiauto._
 
-case class Rate(
+final case class Rate(
     pair: Rate.Pair,
     price: Price,
     timestamp: Timestamp
@@ -17,15 +16,19 @@ object Rate {
   )
 
   object Pair {
+    @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
     implicit val encoder: Encoder[Pair] =
       deriveEncoder[Pair]
 
+    @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
     implicit val decoder: Decoder[Pair] =
       deriveDecoder[Pair]
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   implicit val encoder: Encoder[Rate] =
     deriveEncoder[Rate]
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   implicit val decoder: Decoder[Rate] = deriveDecoder[Rate]
 }

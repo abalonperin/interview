@@ -4,7 +4,7 @@ import akka.http.scaladsl._
 import akka.http.scaladsl.model._
 import forex.processes._
 
-case class ErrorRespone(reason: String, throwable: Throwable)
+final case class ErrorRespone(reason: String, throwable: Throwable)
 
 object ApiExceptionHandler {
 
@@ -25,8 +25,7 @@ object ApiExceptionHandler {
           ctx.complete(
             HttpResponse(
               StatusCodes.InternalServerError,
-              entity = HttpEntity(
-                s"""{"reason":"cache error", "throwable":"${c.throwable}"}""")
+              entity = HttpEntity(s"""{"reason":"cache error", "throwable":"${c.throwable}"}""")
             )
           )
       case u: RatesError.UnexpectedError ⇒
@@ -34,8 +33,7 @@ object ApiExceptionHandler {
           ctx.complete(
             HttpResponse(
               StatusCodes.InternalServerError,
-              entity = HttpEntity(
-                s"""{"reason":"unexpected error", "throwable":"${u}"}""")
+              entity = HttpEntity(s"""{"reason":"unexpected error", "throwable":"${u}"}""")
             )
           )
       case t: Throwable ⇒
@@ -43,8 +41,7 @@ object ApiExceptionHandler {
           ctx.complete(
             HttpResponse(
               StatusCodes.InternalServerError,
-              entity = HttpEntity(
-                s"""{"reason":"unexpected error", "throwable":"${t}"}""")
+              entity = HttpEntity(s"""{"reason":"unexpected error", "throwable":"${t}"}""")
             )
           )
     }

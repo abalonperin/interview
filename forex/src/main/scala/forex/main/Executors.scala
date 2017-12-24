@@ -8,7 +8,7 @@ import org.zalando.grafter.macros._
 import scala.concurrent.ExecutionContext
 
 @readerOf[ApplicationConfig]
-case class Executors(
+final case class Executors(
     config: ExecutorsConfig,
     actorSystems: ActorSystems
 ) extends Start {
