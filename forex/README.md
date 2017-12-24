@@ -23,7 +23,7 @@ According to this design, I don't frequently reach 1-forge service.
 It improves the response time and reduces the expense of 1-forge service and forex service have a capacity of serving more online users.
 
 ## Architecture
-![](https://www.dropbox.com/s/75uaavfthwyg1ni/Forex.jpg?dl=0)   
+![architecture](https://www.dropbox.com/s/75uaavfthwyg1ni/Forex.jpg?dl=0)   
                     
 # How to run all test cases?
 ```scala
