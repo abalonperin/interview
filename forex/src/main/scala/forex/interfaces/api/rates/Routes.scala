@@ -38,14 +38,14 @@ final case class Routes(
     Array(
       new ApiImplicitParam(
         name = "from",
-        value = "Currency, for example: AUD",
+        value = "Currency, for example: USD",
         required = true,
         dataTypeClass = classOf[Currency],
         paramType = "path"
       ),
       new ApiImplicitParam(
         name = "to",
-        value = "Currency, for example: AUD",
+        value = "Currency, for example: JPY",
         required = true,
         dataTypeClass = classOf[Currency],
         paramType = "path"

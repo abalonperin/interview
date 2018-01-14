@@ -1,3 +1,4 @@
+import scala.languageFeature.experimental.macros
 
 name := "forex"
 version := "1.0.0"
@@ -20,27 +21,42 @@ resolvers +=
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 lazy val versions = new {
+  val cats = "0.9.0"
   val akka = "2.5.9"
   val akkaHttp = "10.1.0-RC1"
+  val akkaHttpCirce = "1.18.1"
   val circe = "0.8.0"
   val pureconfig = "0.7.2"
   val refined = "0.8.5"
   val eff = "4.6.1"
+  val grafter = "2.3.0"
+  val sttp = "1.1.4"
+  val logback = "1.2.3"
+  val scalaLogging = "3.7.2"
+  val scaffeine = "2.3.0"
+  val swaggerAkkaHttp = "0.11.2"
+  val swaggerUiAkkaHttp = "1.1.0"
+  val swaggerJaxrs = "1.5.17"
+  val jaxbApi = "2.3.0"
+  val scalatest = "3.0.4"
 }
+
+addCompilerPlugin("org.spire-math"  %% "kind-projector" % "0.9.5")
+addCompilerPlugin("org.scalamacros" %% "paradise"       % "2.1.1" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "com.github.pureconfig"        %% "pureconfig"                      % versions.pureconfig,
   "eu.timepit"                   %% "refined"                         % versions.refined,
   "eu.timepit"                   %% "refined-pureconfig"              % versions.refined,
-  "io.swagger"                   % "swagger-jaxrs"                    % "1.5.17",
-  "com.github.swagger-akka-http" %% "swagger-akka-http"               % "0.11.2",
-  "javax.xml.bind"               % "jaxb-api"                         % "2.3.0",
-  "co.pragmati" %% "swagger-ui-akka-http" % "1.1.0",
+  "io.swagger"                   % "swagger-jaxrs"                    % versions.swaggerJaxrs,
+  "com.github.swagger-akka-http" %% "swagger-akka-http"               % versions.swaggerAkkaHttp,
+  "javax.xml.bind"               % "jaxb-api"                         % versions.jaxbApi,
+  "co.pragmati"                  %% "swagger-ui-akka-http"            % versions.swaggerUiAkkaHttp,
   "com.typesafe.akka"            %% "akka-actor"                      % versions.akka,
   "com.typesafe.akka"            %% "akka-stream"                     % versions.akka,
   "com.typesafe.akka"            %% "akka-slf4j"                      % versions.akka,
   "com.typesafe.akka"            %% "akka-http"                       % versions.akkaHttp,
-  "de.heikoseeberger"            %% "akka-http-circe"                 % "1.18.1",
+  "de.heikoseeberger"            %% "akka-http-circe"                 % versions.akkaHttpCirce,
   "io.circe"                     %% "circe-core"                      % versions.circe,
   "io.circe"                     %% "circe-generic"                   % versions.circe,
   "io.circe"                     %% "circe-generic-extras"            % versions.circe,
@@ -48,20 +64,18 @@ libraryDependencies ++= Seq(
   "io.circe"                     %% "circe-jawn"                      % versions.circe,
   "org.atnos"                    %% "eff"                             % versions.eff,
   "org.atnos"                    %% "eff-monix"                       % versions.eff,
-  "org.zalando"                  %% "grafter"                         % "2.3.0",
-  "ch.qos.logback"               % "logback-classic"                  % "1.2.3",
-  "com.typesafe.scala-logging"   %% "scala-logging"                   % "3.7.2",
-  "com.softwaremill.sttp"        %% "core"                            % "1.1.4",
-  "com.softwaremill.sttp"        %% "async-http-client-backend-monix" % "1.1.4",
-  "com.softwaremill.sttp"        %% "circe"                           % "1.1.4",
-  "com.github.blemale"           %% "scaffeine"                       % "2.3.0",
-  compilerPlugin("org.spire-math"  %% "kind-projector" % "0.9.5"),
-  compilerPlugin("org.scalamacros" %% "paradise"       % "2.1.1" cross CrossVersion.full),
-  "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+  "org.zalando"                  %% "grafter"                         % versions.grafter,
+  "ch.qos.logback"               % "logback-classic"                  % versions.logback,
+  "com.typesafe.scala-logging"   %% "scala-logging"                   % versions.scalaLogging,
+  "com.softwaremill.sttp"        %% "core"                            % versions.sttp,
+  "com.softwaremill.sttp"        %% "async-http-client-backend-monix" % versions.sttp,
+  "com.softwaremill.sttp"        %% "circe"                           % versions.sttp,
+  "com.github.blemale"           %% "scaffeine"                       % versions.scaffeine,
+  "org.scalatest"                %% "scalatest"                       % versions.scalatest % "test"
 )
 
 dependencyOverrides ++= Seq(
-  "org.typelevel" %% "cats-core" % "0.9.0"
+  "org.typelevel" %% "cats-core" % versions.cats
 )
 
 parallelExecution in Test := false

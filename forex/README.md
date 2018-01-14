@@ -14,8 +14,8 @@ I need to obsolete a rate which is older than 5 minutes and contend with heavy t
 A simple solution is that I access 1-forge service once when a user triggers a request and get rid of out-of-date rate.
 There are several disadvantages: 
 1. when traffic becomes heavy, there is a high possibility that I  might break 1-forge service and forex service.
-2. when traffic becomes heavy, It might cause the tremendous cost of 1-forge service because 1-forge service API isn't free.
-3. when an internet connection is poor,  forex service might always return internal server error or the response time might become longer.
+2. when traffic becomes heavy, It might raise the tremendous cost of 1-forge service if we use 1-forge paid API.
+3. when an internet connection is poor of 1-forge service has longer response time, forex service might always return internal server error or the response time might become longer.
 
 In order to not to access 1-forge service every time, I assume a currency rate should not have a dramatic change in 5 minutes. 
 So I put a rate that gets from 1-forge service into a cache and this rate will expire after 5 minutes. 
@@ -39,70 +39,17 @@ sbt run
 2. access service
 ```bash
 curl 'http://localhost:8888?from=USD&to=JPY'
-* Rebuilt URL to: http://localhost:8888/?from=USD&to=JPY
-*   Trying 127.0.0.1...
-* TCP_NODELAY set
-* Connected to localhost (127.0.0.1) port 8888 (#0)
-> GET /?from=USD&to=JPY HTTP/1.1
-> Host: localhost:8888
-> User-Agent: curl/7.54.0
-> Accept: */*
->
-< HTTP/1.1 200 OK
-< Server: akka-http/10.0.10
-< Date: Fri, 22 Dec 2017 09:56:54 GMT
-< Content-Type: application/json
-< Content-Length: 77
-<
-* Connection #0 to host localhost left intact
-{"from":"USD","to":"JPY","price":113.3465,"timestamp":"2017-12-22T09:56:48Z"}
-
-curl 'http://localhost:8888?from=USD&to=XXX'
-* Rebuilt URL to: http://localhost:8888/?from=USD&to=XXX
-*   Trying 127.0.0.1...
-* TCP_NODELAY set
-* Connected to localhost (127.0.0.1) port 8888 (#0)
-> GET /?from=USD&to=XXX HTTP/1.1
-> Host: localhost:8888
-> User-Agent: curl/7.54.0
-> Accept: */*
->
-< HTTP/1.1 400 Bad Request
-< Server: akka-http/10.0.10
-< Date: Fri, 22 Dec 2017 16:15:43 GMT
-< Content-Type: text/plain; charset=UTF-8
-< Content-Length: 71
-<
-The query parameter 'to' was malformed:
-* Connection #0 to host localhost left intact
-XXX (of class java.lang.String)
-
-curl -v 'http://localhost:8888?from=SGD&to=CAD'
-* Rebuilt URL to: http://localhost:8888/?from=SGD&to=CAD
-*   Trying 127.0.0.1...
-* TCP_NODELAY set
-* Connected to localhost (127.0.0.1) port 8888 (#0)
-> GET /?from=SGD&to=CAD HTTP/1.1
-> Host: localhost:8888
-> User-Agent: curl/7.54.0
-> Accept: */*
->
-< HTTP/1.1 500 Internal Server Error
-< Server: akka-http/10.0.10
-< Date: Fri, 22 Dec 2017 16:38:50 GMT
-< Content-Type: text/plain; charset=UTF-8
-< Content-Length: 166
-<
-* Connection #0 to host localhost left intact
-{"reason":"forger service error: We are unable to convert the price for the given currencies.  If you need help, please email contact@1forge.com", "throwable":"None"}
 ```
 
+# How to access Swagger?
+
+1. start service
+```scala
+sbt run
+```
+
+2. open your browser and type `http://localhost:8888/swagger?url=http://localhost:8888/api-docs/swagger.json`
+
 # Improvement
-1. The body of error response:
-Should transform body of error response into json format.
-
-2. The `Content-Type` of error response:
-Should transform `Content-Type` of error response into `application/json`.
-
-3. A monitor mechanism
-Should send events to a monitor system in order to track this service. 
+* A monitor mechanism
+Should send events to a monitor system in order to track this service.
