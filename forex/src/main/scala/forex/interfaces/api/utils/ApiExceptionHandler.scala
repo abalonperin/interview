@@ -38,6 +38,7 @@ object ApiExceptionHandler {
           )
       case t: Throwable ⇒
         ctx ⇒
+          t.printStackTrace()
           ctx.complete(
             HttpResponse(
               StatusCodes.InternalServerError,
